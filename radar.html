@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Radar</title>
+    <style>
+        html {
+            font-size: calc(100vw/3.75);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222653;
+        }
+        #demo1, #demo2, #demo3, #demo4 {
+            position: absolute;
+            width: 100%;
+            height: 6rem;
+        }
+    </style>
+    <script src="./echarts.js"></script>
+    <script src="./china.js"></script>
+</head>
+<body>
+<div id="demo1"></div>
+<div id="demo2"></div>
+<div id="demo3"></div>
+<div id="demo4"></div>
+<canvas id="radar" width="375" height="667"></canvas>
+
+<script>
+var canvas = document.getElementById('radar'),
+    ctx = canvas.getContext('2d'),
+    radius = 90,
+    width = document.body.clientWidth,
+    height = document.body.clientHeight,
+    data = [
+        {
+        	title: '智商指数',
+            value: 80
+        },
+        {
+        	title: '高管指数',
+            value: 99
+        },
+        {
+        	title: '多金指数',
+            value: 65
+        },
+        {
+        	title: '肥胖指数',
+            value: 62
+        },
+        {
+        	title: '抑郁指数',
+            value: 45
+        },
+        {
+        	title: '出轨指数',
+            value: 19
+        }
+    ],
+    options = {
+	    title: {
+	    	fontSize: 15,
+            color: '#ffffff'
+        },
+        value: {
+	    	fontSize: 20,
+            color: '#23E7DD'
+        },
+        maxValue: 100,
+        minValue: 0
+    };
+
+ctx.translate(width/2, height/2);
+
+radar();
+
+function radar() {
+	drawOuter(ctx, radius);
+	drawInnerLine(ctx, radius);
+	drawAllHexagon(radius, 5);
+	drawData(ctx, data, options);
+	drawArea(ctx, data, options);
+}
+
+function drawOuter(ctx, radius) {
+    ctx.beginPath();
+    ctx.arc(0, 0, radius, 0, 2*Math.PI);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.closePath();
+}
+
+function drawInnerLine(ctx, radius) {
+    var ang = Math.PI / 3, num = 0;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.lineWidth = 1;
+    for(; num < 6; num++) {
+	    ctx.beginPath();
+	    ctx.moveTo(0, 0);
+	    ctx.lineTo(0, -radius);
+	    ctx.stroke();
+	    ctx.closePath();
+	    ctx.rotate(ang);
+    }
+}
+
+function _drawHexagon(ctx, segment) {
+    ctx.save();
+	ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+	ctx.lineWidth = 1;
+	ctx.moveTo(0, -segment);
+	ctx.beginPath();
+	for(var i = 1; i < 7; i++) {
+		var ang = i * Math.PI / 3;
+		var x = segment * Math.sin(ang);
+		var y = segment * (-Math.cos(ang));
+		ctx.lineTo(x, y);
+	}
+	ctx.closePath();
+	ctx.stroke();
+	ctx.restore();
+}
+
+function drawAllHexagon(radius, splitNumber) {
+	var split = splitNumber || 5,
+		segment = Math.floor(radius / split),
+		num = 1;
+	for(; num < split; num++) {
+		var seg = segment * num;
+		_drawHexagon(ctx, seg);
+	}
+}
+
+function drawData(ctx, data, options) {
+	_drawText(ctx, data, options);
+	_drawValue(ctx, data, options);
+}
+
+function _drawText(ctx, data, options) {
+	var length = data.length,
+        ang,
+        num = 0;
+	ctx.font = options.title.fontSize + "px arial";
+	ctx.fillStyle = options.title.color;
+	ctx.textBaseline = "middle";
+	ctx.textAlign = "center";
+	for(; num < length; num++) {
+		ang = num * (2 * Math.PI / length);
+		ctx.rotate(ang);
+		ctx.translate(0, -radius * 1.5);
+		ctx.rotate(-ang);
+		if(num == 0) {
+			ctx.fillText(data[num].title, 0, 0);
+		} else if(num == 1) {
+			ctx.fillText(data[num].title, 10, 0);
+		} else if(num == 2) {
+			ctx.fillText(data[num].title, 0, 0);
+		} else if(num == 3) {
+			ctx.fillText(data[num].title, 0, 0);
+		} else if(num == 4) {
+			ctx.fillText(data[num].title, 0, 0);
+		} else {
+			ctx.fillText(data[num].title, 0, 0);
+		}
+		ctx.rotate(ang);
+		ctx.translate(0, radius * 1.5);
+		ctx.rotate(-ang);
+	}
+}
+
+function _drawValue(ctx, data, options) {
+	var length = data.length,
+		ang,
+		num = 0;
+	ctx.font = options.value.fontSize + "px arial";
+	ctx.fillStyle = options.value.color;
+	ctx.textBaseline = "middle";
+	ctx.textAlign = "center";
+	for(; num < length; num++) {
+		ang = num * (2 * Math.PI / length);
+		ctx.rotate(ang);
+		ctx.translate(0, -radius * 1.1);
+		ctx.rotate(-ang);
+		if(num == 0) {
+			ctx.fillText(data[num].value, 0, -10);
+		} else if(num == 1) {
+			ctx.fillText(data[num].value, 40, 8);
+		} else if(num == 2) {
+			ctx.fillText(data[num].value, 30, 45);
+		} else if(num == 3) {
+			ctx.fillText(data[num].value, 0, 60);
+		} else if(num == 4) {
+			ctx.fillText(data[num].value, -30, 40);
+		} else {
+			ctx.fillText(data[num].value, -35, 8);
+		}
+		ctx.rotate(ang);
+		ctx.translate(0, radius * 1.1);
+		ctx.rotate(-ang);
+	}
+}
+
+function drawArea(ctx, data, options) {
+	var max = options.maxValue,
+        min = options.minValue,
+        i = 1, length = data.length, ang;
+    data.forEach(function(item) {
+    	console.log(item);
+    	item.rate = (item.value >= min && item.value <= max)
+            ? radius * (item.value / max).toFixed(2)
+            : (min / max).toFixed(2);
+    });
+	ctx.translate(0, 0);
+	ctx.moveTo(0, -data[0].rate);
+	ctx.beginPath();
+	for(; i < length; i++) {
+		ang = i * (2 * Math.PI / length);
+		var x = data[i].rate * Math.sin(ang);
+		var y = data[i].rate * (-Math.cos(ang));
+		console.log(x, y);
+		ctx.lineTo(x, y);
+	}
+	ctx.lineTo(0, -data[0].rate);
+	ctx.closePath();
+	ctx.fillStyle = "rgba(31, 131, 206, 0.5)";
+	ctx.fill();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Map</title>
+    <style>
+        html {
+            font-size: calc(100vw/3.75);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ffffff;
+        }
+        #demo2 {
+            position: absolute;
+            width: 100%;
+            height: 6rem;
+        }
+    </style>
+    <script src="./echarts.js"></script>
+    <script src="./china.js"></script>
+</head>
+<body>
+<div id="demo2"></div>
+<script>
+	var demo2 = echarts.init(document.getElementById('demo2'));
+
+	var option2 = {
+		title: {
+			text: '人脉图谱',
+			left: 'center',
+            textStyle: {
+				fontSize: 20
+            }
+		},
+		tooltip: {
+			trigger: 'item'
+		},
+		legend: {
+			orient: 'vertical',
+			right: true,
+			bottom: true,
+			data:['好友分布>=20%','好友分布>=5%','好友分布>=1%', '好友分布<1%']
+		},
+		visualMap: {
+			type: 'continuous',
+			max: 100,
+			min: 0,
+			left: 'left',
+			top: 'bottom',
+			text: ['高(百分比)','低(百分比)'],           // 文本，默认为数值文本
+			calculable: true,
+			color: ['#94DC71', '#35A79A', '#277B9E', '#13536F']
+		},
+		series: [
+			{
+				name: '好友分布>=20%',
+				type: 'map',
+				mapType: 'china',
+				roam: false,
+				label: {
+					normal: {
+						show: false
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				itemStyle: {
+					normal: {
+						color: '#94DC71',
+						shadowBlur: 10,
+						shadowColor: '#333'
+					}
+				},
+				data:[
+					{name: '上海',value: 99 }
+				]
+			},
+			{
+				name: '好友分布>=5%',
+				type: 'map',
+				mapType: 'china',
+				label: {
+					normal: {
+						show: false
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				itemStyle: {
+					normal: {
+						color: '#35A79A',
+						shadowBlur: 10,
+						shadowColor: '#333'
+					}
+				},
+				data:[
+					{name: '辽宁',value: 60 },
+					{name: '河南',value: 60 },
+					{name: '江苏',value: 60 },
+					{name: '浙江',value: 65 },
+					{name: '福建',value: 63 },
+					{name: '广东',value: 60 }
+				]
+			},
+			{
+				name: '好友分布>=1%',
+				type: 'map',
+				mapType: 'china',
+				label: {
+					normal: {
+						show: false
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				itemStyle: {
+					normal: {
+						color: '#277B9E',
+						shadowBlur: 10,
+						shadowColor: '#333'
+					}
+				},
+				data:[
+					{name: '北京',value: 38 },
+					{name: '天津',value: 37 },
+					{name: '河北',value: 33 },
+					{name: '山东',value: 31 },
+					{name: '山西',value: 34 },
+					{name: '陕西',value: 39 },
+					{name: '四川',value: 36 },
+					{name: '青海',value: 36 },
+					{name: '重庆',value: 33 },
+					{name: '贵州',value: 37 },
+					{name: '广西',value: 37 },
+					{name: '湖南',value: 38 },
+					{name: '江西',value: 34 },
+					{name: '湖北',value: 35 },
+					{name: '安徽',value: 35 }
+				]
+			},
+			{
+				name: '好友分布<1%',
+				type: 'map',
+				mapType: 'china',
+				label: {
+					normal: {
+						show: false
+					},
+					emphasis: {
+						show: false
+					}
+				},
+				itemStyle: {
+					normal: {
+						color: '#13536F',
+						shadowBlur: 10,
+						shadowColor: '#333'
+					}
+				},
+				data:[
+					{name: '黑龙江',value: 0.3 },
+					{name: '吉林',value: 0.6 },
+					{name: '内蒙古',value: 0.7 },
+					{name: '新疆',value: 0.8 },
+					{name: '西藏',value: 0.9 },
+					{name: '云南',value: 0.1 },
+					{name: '海南',value: 0.4 },
+					{name: '台湾',value: 0.4 },
+					{name: '甘肃',value: 0.4 },
+					{name: '宁夏',value: 0.4 }
+				]
+			}
+		]
+	};
+	demo2.setOption(option2);
+</script>
+</body>
+</html>

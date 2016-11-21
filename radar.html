@@ -13,22 +13,18 @@
             padding: 0;
             background-color: #222653;
         }
-        #demo1, #demo2, #demo3, #demo4 {
-            position: absolute;
-            width: 100%;
-            height: 6rem;
+       .radar {
+            margin-top: 1.8rem;
+            margin-left: .85rem;
         }
     </style>
     <script src="./echarts.js"></script>
     <script src="./china.js"></script>
 </head>
 <body>
-<div id="demo1"></div>
-<div id="demo2"></div>
-<div id="demo3"></div>
-<div id="demo4"></div>
-<canvas id="radar" width="375" height="667"></canvas>
-
+    <div class="radar">
+        <canvas id="radar" width="400" height="600" style="width: 2rem; height: 3rem;"></canvas>
+    </div>
 <script>
 var canvas = document.getElementById('radar'),
     ctx = canvas.getContext('2d'),

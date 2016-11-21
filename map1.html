@@ -14,7 +14,8 @@
         }
         #demo1 {
             position: absolute;
-            margin-left: 100px;
+            top:0;bottom:0;left:0;right:0;
+            margin: auto;
         }
     </style>
     <script src="./echarts.js"></script>
@@ -61,8 +62,9 @@
 			left: 'center',
 			textStyle: {
 				color: '#fff',
-                fontSize: 45
-			}
+                fontSize: 30
+			},
+            top: 20
 		},
 		geo: {
 			map: 'china',
@@ -71,7 +73,7 @@
 					show: false
 				}
 			},
-			roam: false,
+			roam: true,
             scaleLimit: {min: 0.8, max: 2.1},
 			center: [126.97, 23.71],
 			itemStyle: {
@@ -93,7 +95,7 @@
 					return b.value - a.value;
 				}).slice(0, 6)),
 				symbolSize: function (val) {
-					return val[3] / 10;
+					return val[3] / 5;
 				},
 				showEffectOn: 'render',
 				rippleEffect: {

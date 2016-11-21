@@ -22,7 +22,7 @@
     <script src="./china.js"></script>
 </head>
 <body>
-<div id="demo2" style="width: 600px; height: 800px;"></div>
+<div id="demo2" style="width: 800px; height: 1000px;"></div>
 <script>
 	var demo2 = echarts.init(document.getElementById('demo2'));
 
@@ -31,12 +31,15 @@
 			text: '人脉图谱',
 			left: 'center',
             textStyle: {
-				fontSize: 30
+				fontSize: 40
             },
             padding: 20
 		},
 		tooltip: {
-			trigger: 'item'
+			trigger: 'item',
+            textStyle: {
+                fontSize: 24
+            }
 		},
 		legend: {
 			orient: 'vertical',
@@ -44,7 +47,7 @@
 			bottom: true,
 			data:['好友分布>=20%','好友分布>=5%','好友分布>=1%', '好友分布<1%'],
             textStyle: {
-                fontSize: 16
+                fontSize: 20
             }
 		},
 		visualMap: {
@@ -57,7 +60,7 @@
 			calculable: true,
 			color: ['#94DC71', '#35A79A', '#277B9E', '#13536F'],
             textStyle: {
-                fontSize: 16
+                fontSize: 20
             }
 		},
 		series: [
@@ -86,7 +89,7 @@
 					{name: '上海',value: 99 }
 				],
                 layoutCenter: ['50%', '50%'],
-                layoutSize: 600
+                layoutSize: 800
 			},
 			{
 				name: '好友分布>=5%',

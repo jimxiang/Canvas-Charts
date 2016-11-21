@@ -22,7 +22,7 @@
     <script src="./china.js"></script>
 </head>
 <body>
-<div id="demo1" style="width: 600px; height: 800px"></div>
+<div id="demo1" style="width: 800px; height: 800px"></div>
 <script>
 	var demo1 = echarts.init(document.getElementById('demo1'));
 
@@ -84,7 +84,9 @@
 				emphasis: {
 					areaColor: '#2a333d'
 				}
-			}
+			},
+            layoutCenter: ['70%', '90%'],
+            layoutSize: 800
 		},
 		series : [
 			{
@@ -99,6 +101,7 @@
 				},
 				showEffectOn: 'render',
 				rippleEffect: {
+                    scale: 3.5,
 					brushType: 'stroke'
 				},
 				hoverAnimation: false,
@@ -110,7 +113,7 @@
 						position: [35, -3],
 						show: true,
                         textStyle: {
-                            fontSize: 18
+                            fontSize: 22
                         }
 					}
 				},

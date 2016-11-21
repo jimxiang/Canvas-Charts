@@ -22,7 +22,7 @@
     <script src="./china.js"></script>
 </head>
 <body>
-<div id="demo2"></div>
+<div id="demo2" style="width: 600px; height: 800px;"></div>
 <script>
 	var demo2 = echarts.init(document.getElementById('demo2'));
 
@@ -59,6 +59,7 @@
 				type: 'map',
 				mapType: 'china',
 				roam: false,
+                scaleLimit: {min: 0.8, max: 1.1},
 				label: {
 					normal: {
 						show: false
@@ -178,6 +179,7 @@
 		]
 	};
 	demo2.setOption(option2);
+    window.onresize = demo2.resize;
 </script>
 </body>
 </html>

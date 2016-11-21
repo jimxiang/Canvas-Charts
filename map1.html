@@ -10,19 +10,18 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #ffffff;
+            background-color: #404a59;
         }
         #demo1 {
             position: absolute;
-            width: 100%;
-            height: 6rem;
+            margin-left: 100px;
         }
     </style>
     <script src="./echarts.js"></script>
     <script src="./china.js"></script>
 </head>
 <body>
-<div id="demo1"></div>
+<div id="demo1" style="width: 600px; height: 800px"></div>
 <script>
 	var demo1 = echarts.init(document.getElementById('demo1'));
 
@@ -55,23 +54,14 @@
 	};
 
 	var option1 = {
-		backgroundColor: '#404a59',
 		title: {
 			text: '人脉图谱',
 			subtext: '',
 			sublink: '',
 			left: 'center',
 			textStyle: {
-				color: '#fff'
-			}
-		},
-		legend: {
-			orient: 'vertical',
-			y: 'bottom',
-			x:'right',
-			data:['人脉'],
-			textStyle: {
-				color: '#fff'
+				color: '#fff',
+                fontSize: 45
 			}
 		},
 		geo: {
@@ -82,6 +72,7 @@
 				}
 			},
 			roam: false,
+            scaleLimit: {min: 0.8, max: 2.1},
 			center: [126.97, 23.71],
 			itemStyle: {
 				normal: {
@@ -115,7 +106,10 @@
 							return params.value[2];
 						},
 						position: [35, -3],
-						show: true
+						show: true,
+                        textStyle: {
+                            fontSize: 18
+                        }
 					}
 				},
 				itemStyle: {
@@ -130,6 +124,7 @@
 		]
 	};
 	demo1.setOption(option1);
+    window.onresize = demo1.resize;
 </script>
 </body>
 </html>

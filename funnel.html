@@ -57,16 +57,16 @@ function Funnel(domID, data) {
     var instance = {},
         canvas = document.getElementById(domID),
         ctx = canvas.getContext('2d'),
-        width = canvas.width * 1.5,
-        height = canvas.height * 1.5 ,
-        pyramid_l = height, // 正四棱锥的棱长
+        width = canvas.width,
+        height = canvas.height,
+        pyramid_l = height * 0.6, // 正四棱锥的棱长
         pyramid_h = height / (Math.sqrt(2)), // 正四棱锥高
-        data = data || {},
         top_ang = Math.PI * 7 / 36,
         bottom_ang = Math.PI / 9;
+	data = data || {};
     ctx.translate(canvas.width/2, 0);
 
-   function _heightRatio() {
+    function _heightRatio() {
         if(!data) return;
         var total = 0, a_ratio = [];
         data.forEach(function(item, key) {
@@ -78,106 +78,121 @@ function Funnel(domID, data) {
             return;
         }
         return a_ratio;
-    };
+    }
     function _renderTop(ratio) {
         if(!ratio) return;
         var top_l = (+ratio) * pyramid_l, // 顶部棱长
-            top_h = (+ratio) * pyramid_h, //顶部高
-            point_left_x = (-top_l / 2),
-            point_left_y = top_h,
-            point_middle_x = 0,
-            point_middle_y = top_l,
-            point_right_x = top_l / 2,
-            point_right_y = top_h;
+            top_h = top_l * Math.cos(top_ang) + top_l * Math.sin(top_ang) * Math.tan(bottom_ang), //顶部高
+            point_left = [-top_l * Math.sin(top_ang), top_l * Math.cos(top_ang)],
+            point_middle = [0, top_h],
+            point_right = [top_l * Math.sin(top_ang), top_l * Math.cos(top_ang)];
+
         instance.top_length = top_l;
         instance.top_height = top_h;
+        instance.top_b_l = top_l * Math.sin(top_ang);
         instance.shadow_length = top_h / (4 * Math.sqrt(2));
+
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(point_left_x, point_left_y);
-        ctx.lineTo(point_middle_x, point_middle_y - 18);
+        ctx.lineTo(point_left[0], point_left[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
         ctx.lineTo(0, 0);
         ctx.closePath();
         ctx.fillStyle = 'rgba(123, 190, 94, 1)';
         ctx.fill();
+
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(point_right_x, point_right_y);
-        ctx.lineTo(point_middle_x, point_middle_y - 18);
+        ctx.lineTo(point_right[0], point_right[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
         ctx.lineTo(0, 0);
         ctx.closePath();
         ctx.fillStyle = 'rgba(103, 169, 101, 1)';
         ctx.fill();
 
-        console.log(point_left_x, point_left_y);
         // 顶部阴影
-        ctx.beginPath();
-        ctx.moveTo(0, point_middle_y - 18);
-        ctx.lineTo(point_left_x + 30, point_left_y + 11);
-        // ctx.lineTo();
-        ctx.closePath();
-        ctx.strokeStyle = 'rgba(44, 133, 144, 1)';
-        ctx.stroke();
+//        ctx.beginPath();
+//        ctx.moveTo(0, point_middle_y - 18);
+//        ctx.lineTo(point_left_x + 30, point_left_y + 11);
+//        // ctx.lineTo();
+//        ctx.closePath();
+//        ctx.strokeStyle = 'rgba(44, 133, 144, 1)';
+//        ctx.stroke();
         ctx.translate(0, top_l);
     }
 
     function _renderMiddle(ratio) {
         if(!ratio) return;
         var middle_l = (+ratio) * pyramid_l,
-            middle_h = (+ratio) * pyramid_h,
-            shadow_length = instance.shadow_length,
-            top_section_h = instance.top_length / 2;
+            middle_h = middle_l * Math.cos(top_ang) + middle_l * Math.sin(top_ang) * Math.tan(bottom_ang),
+            start_height_fix = instance.top_b_l * Math.sin(bottom_ang),
+            point_left_top = [-instance.top_b_l, 0],
+            point_left_bottom = [-(middle_l * Math.sin(top_ang) + instance.top_b_l), middle_l * Math.cos(top_ang)],
+            point_middle = [0, middle_h],
+            point_right_top = [instance.top_b_l, 0],
+            point_right_bottom = [middle_l * Math.sin(top_ang) + instance.top_b_l, middle_l * Math.cos(top_ang)];
+
         instance.middle_length = middle_l;
         instance.middle_height = middle_h;
+	    instance.middle_b_l = middle_l * Math.sin(top_ang) + instance.top_b_l;
 
         ctx.beginPath();
-        ctx.moveTo(0, 8);
-        ctx.lineTo(-top_section_h * 1.05, -18);
-        ctx.lineTo(-middle_l * 0.83 / 2, middle_h - instance.top_height * 1.6);
-        ctx.lineTo(0 , middle_h - instance.top_height - 18);
-        ctx.lineTo(0, 8);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_left_top[0], point_left_top[1]);
+        ctx.lineTo(point_left_bottom[0], point_left_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(51, 162, 150, 1)';
         ctx.fill();
 
         ctx.beginPath();
-        ctx.moveTo(0, 8);
-        ctx.lineTo(top_section_h * 1.05, -18);
-        ctx.lineTo(middle_l * 0.83 / 2, middle_h - instance.top_height * 1.6);
-        ctx.lineTo(0 , middle_h - instance.top_height - 18);
-        ctx.lineTo(0, 8);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_right_top[0], point_right_top[1]);
+        ctx.lineTo(point_right_bottom[0], point_right_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(45, 146, 148, 1)';
         ctx.fill();
-        ctx.translate(0, middle_l - instance.top_length - 40);
+
+        ctx.translate(0, middle_l);
     }
 
     function _renderThird(ratio) {
         if(!ratio) return;
         var third_l = (+ratio) * pyramid_l,
-            third_h = (+ratio) * pyramid_h,
+            third_h = third_l * Math.cos(top_ang) + third_l * Math.sin(top_ang) * Math.tan(bottom_ang),
+	        start_height_fix = instance.middle_b_l * Math.sin(bottom_ang),
+	        point_left_top = [-instance.middle_b_l, 0],
+	        point_left_bottom = [-(third_l * Math.sin(top_ang) + instance.middle_b_l), third_l * Math.cos(top_ang)],
+	        point_middle = [0, third_h],
+	        point_right_top = [instance.middle_b_l, 0],
+	        point_right_bottom = [third_l * Math.sin(top_ang) + instance.middle_b_l, third_l * Math.cos(top_ang)],
+
             shadow_length = instance.shadow_length,
             middle_section_h = instance.middle_length / 2;
+
         ctx.beginPath();
-        ctx.moveTo(0, -22);
-        ctx.lineTo(-middle_section_h * 0.83, -70);
-        ctx.lineTo(-third_l * 0.41, third_h * 0.15);
-        ctx.lineTo(0 , third_h - instance.middle_height - 16);
-        ctx.lineTo(0, -20);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_left_top[0], point_left_top[1]);
+        ctx.lineTo(point_left_bottom[0], point_left_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(17, 122, 176, 1)';
         ctx.fill();
 
         ctx.beginPath();
-        ctx.moveTo(0, -22);
-        ctx.lineTo(middle_section_h * 0.83, -70);
-        ctx.lineTo(third_l * 0.41, third_h * 0.15);
-        ctx.lineTo(0 , third_h - instance.middle_height - 16);
-        ctx.lineTo(0, -20);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_right_top[0], point_right_top[1]);
+        ctx.lineTo(point_right_bottom[0], point_right_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(17, 107, 159, 1)';
         ctx.fill();
-        ctx.translate(0, third_l - instance.middle_length - 55);
+        ctx.translate(0, third_l);
     }
 
     function _renderBottom() {
@@ -207,13 +222,13 @@ function Funnel(domID, data) {
         if(!a_ratio) return;
         a_ratio.forEach(function(item) {
             if(!item) return;
-        })
+        });
         _renderTop(a_ratio[0]);
         _renderMiddle(a_ratio[1]);
         _renderThird(a_ratio[2]);
-        _renderBottom();
+        // _renderBottom();
         return instance;
-    }
+    };
     return instance;
 }
 </script>

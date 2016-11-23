@@ -19,7 +19,6 @@
             width: 3rem; height: 4rem;
         }
     </style>
-    <script src="./funnel.js"></script>
 </head>
 <body>
     <div class="funnel">
@@ -62,7 +61,9 @@ function Funnel(domID, data) {
         height = canvas.height * 1.5 ,
         pyramid_l = height, // 正四棱锥的棱长
         pyramid_h = height / (Math.sqrt(2)), // 正四棱锥高
-        data = data || {};
+        data = data || {},
+        top_ang = Math.PI * 7 / 36,
+        bottom_ang = Math.PI / 9;
     ctx.translate(canvas.width/2, 0);
 
    function _heightRatio() {
@@ -99,7 +100,6 @@ function Funnel(domID, data) {
         ctx.closePath();
         ctx.fillStyle = 'rgba(123, 190, 94, 1)';
         ctx.fill();
-
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(point_right_x, point_right_y);
@@ -209,8 +209,8 @@ function Funnel(domID, data) {
             if(!item) return;
         })
         _renderTop(a_ratio[0]);
-        // _renderMiddle(a_ratio[1]);
-        // _renderThird(a_ratio[2]);
+        _renderMiddle(a_ratio[1]);
+        _renderThird(a_ratio[2]);
         _renderBottom();
         return instance;
     }

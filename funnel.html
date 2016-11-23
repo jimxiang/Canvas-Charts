@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Funnel</title>
+    <style>
+        html {
+            font-size: calc(100vw/3.75);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #222653;
+        }
+        .funnel {
+            position: absolute;
+            top:0;bottom:0;left:0;right:0;
+            margin: 100px auto;
+            width: 3rem; height: 4rem;
+        }
+    </style>
+    <script src="./funnel.js"></script>
+</head>
+<body>
+    <div class="funnel">
+        <canvas id="funnel" width="600" height="800" style="width: 3rem; height: 4rem;"></canvas>
+    </div>
+<script>
+var data = [
+        {
+        	title: '董事长/创始人',
+            value: 13
+        },
+        {
+        	title: '总监/经理',
+            value: 34
+        },
+        {
+        	title: '助理/专员执行人员',
+            value: 53
+        }
+    ],
+    options = {
+	    title: {
+	    	fontSize: 15,
+            color: '#ffffff'
+        },
+        value: {
+	    	fontSize: 20,
+            color: '#23E7DD'
+        },
+        maxValue: 100,
+        minValue: 0
+    },
+    funnel = Funnel('funnel', data).render(options);
+
+function Funnel(domID, data) {
+    var instance = {},
+        canvas = document.getElementById(domID),
+        ctx = canvas.getContext('2d'),
+        width = canvas.width * 1.5,
+        height = canvas.height * 1.5 ,
+        pyramid_l = height, // 正四棱锥的棱长
+        pyramid_h = height / (Math.sqrt(2)), // 正四棱锥高
+        data = data || {};
+    ctx.translate(canvas.width/2, 0);
+
+   function _heightRatio() {
+        if(!data) return;
+        var total = 0, a_ratio = [];
+        data.forEach(function(item, key) {
+            total += item.value;
+            a_ratio[key] = item.value / 100;
+        });
+        if(total != 100) {
+            console.log('数据比例错误!');
+            return;
+        }
+        return a_ratio;
+    };
+    function _renderTop(ratio) {
+        if(!ratio) return;
+        var top_l = (+ratio) * pyramid_l, // 顶部棱长
+            top_h = (+ratio) * pyramid_h, //顶部高
+            point_left_x = (-top_l / 2),
+            point_left_y = top_h,
+            point_middle_x = 0,
+            point_middle_y = top_l,
+            point_right_x = top_l / 2,
+            point_right_y = top_h;
+        instance.top_length = top_l;
+        instance.top_height = top_h;
+        instance.shadow_length = top_h / (4 * Math.sqrt(2));
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(point_left_x, point_left_y);
+        ctx.lineTo(point_middle_x, point_middle_y - 18);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(123, 190, 94, 1)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(point_right_x, point_right_y);
+        ctx.lineTo(point_middle_x, point_middle_y - 18);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(103, 169, 101, 1)';
+        ctx.fill();
+
+        console.log(point_left_x, point_left_y);
+        // 顶部阴影
+        ctx.beginPath();
+        ctx.moveTo(0, point_middle_y - 18);
+        ctx.lineTo(point_left_x + 30, point_left_y + 11);
+        // ctx.lineTo();
+        ctx.closePath();
+        ctx.strokeStyle = 'rgba(44, 133, 144, 1)';
+        ctx.stroke();
+        ctx.translate(0, top_l);
+    }
+
+    function _renderMiddle(ratio) {
+        if(!ratio) return;
+        var middle_l = (+ratio) * pyramid_l,
+            middle_h = (+ratio) * pyramid_h,
+            shadow_length = instance.shadow_length,
+            top_section_h = instance.top_length / 2;
+        instance.middle_length = middle_l;
+        instance.middle_height = middle_h;
+
+        ctx.beginPath();
+        ctx.moveTo(0, 8);
+        ctx.lineTo(-top_section_h * 1.05, -18);
+        ctx.lineTo(-middle_l * 0.83 / 2, middle_h - instance.top_height * 1.6);
+        ctx.lineTo(0 , middle_h - instance.top_height - 18);
+        ctx.lineTo(0, 8);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(51, 162, 150, 1)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 8);
+        ctx.lineTo(top_section_h * 1.05, -18);
+        ctx.lineTo(middle_l * 0.83 / 2, middle_h - instance.top_height * 1.6);
+        ctx.lineTo(0 , middle_h - instance.top_height - 18);
+        ctx.lineTo(0, 8);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(45, 146, 148, 1)';
+        ctx.fill();
+        ctx.translate(0, middle_l - instance.top_length - 40);
+    }
+
+    function _renderThird(ratio) {
+        if(!ratio) return;
+        var third_l = (+ratio) * pyramid_l,
+            third_h = (+ratio) * pyramid_h,
+            shadow_length = instance.shadow_length,
+            middle_section_h = instance.middle_length / 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -22);
+        ctx.lineTo(-middle_section_h * 0.83, -70);
+        ctx.lineTo(-third_l * 0.41, third_h * 0.15);
+        ctx.lineTo(0 , third_h - instance.middle_height - 16);
+        ctx.lineTo(0, -20);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(17, 122, 176, 1)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, -22);
+        ctx.lineTo(middle_section_h * 0.83, -70);
+        ctx.lineTo(third_l * 0.41, third_h * 0.15);
+        ctx.lineTo(0 , third_h - instance.middle_height - 16);
+        ctx.lineTo(0, -20);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(17, 107, 159, 1)';
+        ctx.fill();
+        ctx.translate(0, third_l - instance.middle_length - 55);
+    }
+
+    function _renderBottom() {
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-265, -80);
+        ctx.lineTo(-278, -60);
+        ctx.lineTo(0 , 26);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(22, 60, 134, 1)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(265, -80);
+        ctx.lineTo(278, -60);
+        ctx.lineTo(0 , 26);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(20, 46, 129, 1)';
+        ctx.fill();
+    }
+
+    instance.render = function(options) {
+        var a_ratio = _heightRatio() || [];
+        if(!a_ratio) return;
+        a_ratio.forEach(function(item) {
+            if(!item) return;
+        })
+        _renderTop(a_ratio[0]);
+        // _renderMiddle(a_ratio[1]);
+        // _renderThird(a_ratio[2]);
+        _renderBottom();
+        return instance;
+    }
+    return instance;
+}
+</script>
+</body>
+</html>

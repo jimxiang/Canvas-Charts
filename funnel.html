@@ -28,7 +28,7 @@
 var data = [
         {
         	title: '董事长 / 创始人',
-            value: 20
+            value: 21
         },
         {
         	title: '总监 / 经理',
@@ -61,23 +61,32 @@ function Funnel(domID, data) {
         height = canvas.height,
         pyramid_l = height * 0.4, // 正四棱锥的棱长
         pyramid_h = height / (Math.sqrt(2)), // 正四棱锥高
-        top_ang = Math.PI * 7 / 36,
-        bottom_ang = Math.PI / 9,
-        resizeH = 0;
+        top_ang = Math.PI * 7 / 36, // 顶部角度
+        bottom_ang = Math.PI / 9, // 底部角度
+        resizeH = 0; // 重置的高度，用来进行原点恢复
 	data = data || {};
-    ctx.translate(width / 2, 0);
+    ctx.translate(width / 2, 0); // 初始化坐标原点
 
+    /* 解析数据 */
     function _heightRatio() {
         if(!data) return;
         var total = 0, a_ratio = [];
         data.forEach(function(item, key) {
             total += item.value;
-            a_ratio[key] = item.value / 100;
         });
         if(total != 100) {
-            console.log('数据比例错误!');
-            return;
+            console.log('数据比例错误!已修正');
+            // 重新计算比例
+            var temp = 0, i = 0;
+            for(i; i < data.length - 1; i++) {
+                data[i].value = Math.floor(data[i].value * 100 / total);
+                temp += data[i].value;
+            }
+            data[data.length - 1].value = 100 - temp;
         }
+        data.forEach(function(item, key) {
+            a_ratio[key] = item.value / 100;
+        });
         return a_ratio;
     }
     function _renderTop(ratio) {

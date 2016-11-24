@@ -339,7 +339,7 @@ function Funnel(domID, data) {
         ctx.fill();
     }
 
-    function _renderShape() {
+    function _render() {
         var a_ratio = _heightRatio() || [];
         if(!a_ratio) return;
         a_ratio.forEach(function(item) {
@@ -356,7 +356,7 @@ function Funnel(domID, data) {
     }
 
     instance.render = function(options) {
-        _renderShape();
+        _render();
         return instance;
     };
     return instance;

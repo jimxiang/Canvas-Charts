@@ -27,26 +27,26 @@
 <script>
 var data = [
         {
-        	title: '董事长/创始人',
+        	title: '董事长 / 创始人',
             value: 20
         },
         {
-        	title: '总监/经理',
-            value: 40
+        	title: '总监 / 经理',
+            value: 34
         },
         {
-        	title: '助理/专员执行人员',
-            value: 40
+        	title: '助理 / 专员执行人员',
+            value: 46
         }
     ],
     options = {
 	    title: {
-	    	fontSize: 15,
-            color: '#ffffff'
+	    	fontSize: 16,
+            color: ''
         },
         value: {
-	    	fontSize: 20,
-            color: '#23E7DD'
+	    	fontSize: 22,
+            color: ''
         },
         maxValue: 100,
         minValue: 0
@@ -112,6 +112,24 @@ function Funnel(domID, data) {
         ctx.fillStyle = 'rgba(103, 169, 101, 1)';
         ctx.fill();
 
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(48, 192, 197, 1)";
+        ctx.lineWidth = 2;
+        ctx.font = 16 + 'px arial';
+    	ctx.fillStyle = 'white';
+    	ctx.textBaseline = 'middle';
+    	ctx.textAlign = "center";
+        ctx.strokeRect(-20, 32, 8, 8);
+        ctx.moveTo(-20, 40);
+        ctx.lineTo(-25, 45);
+        ctx.lineTo(-200, 40);
+        ctx.fillText(data[0].title, -150, 60);
+        ctx.stroke();
+        ctx.font = 'bold ' + 20 + 'px arial';
+    	ctx.fillStyle = 'rgba(48, 192, 197, 1)';
+        ctx.fillText(data[0].value + '%', -180, 20);
+        ctx.closePath();
+
         ctx.translate(0, top_h);
         resizeH += top_h;
     }
@@ -152,6 +170,24 @@ function Funnel(domID, data) {
         ctx.fillStyle = 'rgba(45, 146, 148, 1)';
         ctx.fill();
 
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(48, 192, 197, 1)";
+        ctx.lineWidth = 2;
+        ctx.font = 16 + 'px arial';
+    	ctx.fillStyle = 'white';
+    	ctx.textBaseline = 'middle';
+    	ctx.textAlign = "center";
+        ctx.strokeRect(-20, 52, 8, 8);
+        ctx.moveTo(-20, 60);
+        ctx.lineTo(-25, 65);
+        ctx.lineTo(-250, 60);
+        ctx.fillText(data[1].title, -220, 80);
+        ctx.stroke();
+        ctx.font = 'bold ' + 20 + 'px arial';
+    	ctx.fillStyle = 'rgba(48, 192, 197, 1)';
+        ctx.fillText(data[1].value + '%', -230, 40);
+        ctx.closePath();
+
         ctx.translate(0, middle_h);
         resizeH += middle_h;
     }
@@ -170,6 +206,7 @@ function Funnel(domID, data) {
             shadow_length = instance.shadow_length,
             middle_section_h = instance.middle_length / 2;
         instance.third_b_l = third_l * Math.sin(top_ang) + instance.middle_b_l;
+        instance.third_point = [point_left_top, point_left_bottom, point_middle, point_right_top, point_right_bottom, [0, start_height_fix], third_h];
 
         ctx.beginPath();
         ctx.moveTo(0, start_height_fix);
@@ -190,6 +227,25 @@ function Funnel(domID, data) {
         ctx.closePath();
         ctx.fillStyle = 'rgba(17, 107, 159, 1)';
         ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = "rgba(48, 192, 197, 1)";
+        ctx.lineWidth = 2;
+        ctx.font = 16 + 'px arial';
+    	ctx.fillStyle = 'white';
+    	ctx.textBaseline = 'middle';
+    	ctx.textAlign = "center";
+        ctx.strokeRect(-20, 92, 8, 8);
+        ctx.moveTo(-20, 100);
+        ctx.lineTo(-25, 105);
+        ctx.lineTo(-300, 105);
+        ctx.fillText(data[2].title, -230, 125);
+        ctx.stroke();
+        ctx.font = 'bold ' + 20 + 'px arial';
+    	ctx.fillStyle = 'rgba(48, 192, 197, 1)';
+        ctx.fillText(data[2].value + '%', -280, 85);
+        ctx.closePath();
+
         ctx.translate(0, third_h);
         resizeH += third_h;
     }
@@ -197,12 +253,14 @@ function Funnel(domID, data) {
     function _renderBottom() {
         var start_height_fix = instance.third_b_l * Math.tan(bottom_ang),
             bottom_l = 30,
+            bottom_h = bottom_l * Math.cos(top_ang) + bottom_l * Math.sin(top_ang) * Math.tan(bottom_ang),
             point_left_top = [-instance.third_b_l, 0],
             point_left_bottom = [-(bottom_l * 2 * Math.sin(top_ang) + instance.third_b_l * 0.9), bottom_l * Math.cos(top_ang)],
-            point_middle = [0, bottom_l + start_height_fix],
+            point_middle = [0, bottom_h + start_height_fix],
             point_right_top = [instance.third_b_l, 0],
             point_right_bottom = [bottom_l * 2 * Math.sin(top_ang) + instance.third_b_l * 0.9, bottom_l * Math.cos(top_ang)];
 
+        instance.bottom_point = [point_left_top, point_left_bottom, point_middle, point_right_top, point_right_bottom, [0, start_height_fix], bottom_h];
         ctx.beginPath();
         ctx.moveTo(0, start_height_fix);
         ctx.lineTo(point_left_top[0], point_left_top[1]);
@@ -222,10 +280,9 @@ function Funnel(domID, data) {
         ctx.closePath();
         ctx.fillStyle = 'rgba(20, 46, 129, 1)';
         ctx.fill();
-        ctx.save();
     }
 
-    function _renderShadow() {
+    function _renderTShadow() {
         // 顶部阴影
         var shadow_t_left = [-instance.top_b_l * 0.7, instance.top_point[3] - (instance.top_b_l * 0.7) * Math.tan(bottom_ang)],
             shadow_t_right = [instance.top_b_l * 0.7, instance.top_point[3] - (instance.top_b_l * 0.7) * Math.tan(bottom_ang)];
@@ -238,28 +295,51 @@ function Funnel(domID, data) {
         ctx.lineTo(instance.middle_point[5][0], instance.middle_point[5][1] + instance.top_point[3]);
         ctx.lineTo(instance.middle_point[3][0], instance.middle_point[3][1] + instance.top_point[3]);
         ctx.lineTo(shadow_t_right[0], shadow_t_right[1]);
+        ctx.lineTo(instance.top_point[1][0], instance.top_point[1][1]);
         ctx.closePath();
         ctx.fillStyle = 'rgba(42, 132, 151, 1)';
         ctx.fill();
-
-        // 中间层阴影
-        var shadow_m_left = [-instance.middle_b_l * 0.7, instance.middle_point[3] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)],
-            shadow_m_right = [instance.middle_b_l * 0.7, instance.middle_point[3] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)];
-
-        ctx.translate(0, -resizeH + instance.top_point[3]);
-        ctx.beginPath();
-        ctx.moveTo(instance.middle_point[2][0], instance.middle_point[2][1]);
-        ctx.lineTo(shadow_m_left[0], shadow_m_left[1]);
-        // ctx.lineTo(instance.middle_point[0][0], instance.middle_point[0][1] + instance.top_point[3])
-        // ctx.lineTo(instance.middle_point[5][0], instance.middle_point[5][1] + instance.top_point[3]);
-        // ctx.lineTo(instance.middle_point[3][0], instance.middle_point[3][1] + instance.top_point[3]);
-        // ctx.lineTo(shadow_p_right[0], shadow_p_right[1]);
-        ctx.closePath();
-        ctx.strokeStyle = '#fff)';
-        ctx.stroke();
     }
 
-    instance.render = function(options) {
+    function _renderMShadow() {
+        // 中间层阴影
+        var shadow_m_left = [-instance.middle_b_l * 0.7, instance.middle_point[6] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)],
+            shadow_m_right = [instance.middle_b_l * 0.7, instance.middle_point[6] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)];
+
+        ctx.translate(0, instance.top_point[3] + instance.middle_point[5][1]);
+        ctx.beginPath();
+        ctx.moveTo(instance.middle_point[2][0], instance.middle_point[2][1] - instance.middle_point[5][1]);
+        ctx.lineTo(shadow_m_left[0], shadow_m_left[1]);
+        ctx.lineTo(instance.third_point[0][0], instance.third_point[0][1] + instance.middle_point[6] - instance.middle_point[5][1])
+        ctx.lineTo(instance.third_point[5][0], instance.third_point[5][1] + instance.middle_point[6] - instance.middle_point[5][1]);
+        ctx.lineTo(instance.third_point[3][0], instance.third_point[3][1] + instance.middle_point[6] - instance.middle_point[5][1]);
+        ctx.lineTo(shadow_m_right[0], shadow_m_right[1]);
+        ctx.lineTo(instance.middle_point[2][0], instance.middle_point[2][1] - instance.middle_point[5][1]);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(13, 95, 150, 1)';
+        ctx.fill();
+    }
+
+    function _renderBShadow() {
+        // 底层阴影
+        var shadow_b_left = [-instance.third_b_l * 0.7, instance.third_point[6] - (instance.third_b_l * 0.7) * Math.tan(bottom_ang)],
+            shadow_b_right = [instance.third_b_l * 0.7, instance.third_point[6] - (instance.third_b_l * 0.7) * Math.tan(bottom_ang)];
+
+        ctx.translate(0, instance.middle_point[6] + instance.third_point[5][1] - instance.middle_point[5][1]);
+        ctx.beginPath();
+        ctx.moveTo(instance.third_point[2][0], instance.third_point[2][1] - instance.third_point[5][1]);
+        ctx.lineTo(shadow_b_left[0], shadow_b_left[1]);
+        ctx.lineTo(instance.bottom_point[0][0], instance.bottom_point[0][1] + instance.third_point[6] - instance.third_point[5][1])
+        ctx.lineTo(instance.bottom_point[5][0], instance.bottom_point[5][1] + instance.third_point[6] - instance.third_point[5][1]);
+        ctx.lineTo(instance.bottom_point[3][0], instance.bottom_point[3][1] + instance.third_point[6] - instance.third_point[5][1]);
+        ctx.lineTo(shadow_b_right[0], shadow_b_right[1]);
+        ctx.lineTo(instance.third_point[2][0], instance.third_point[2][1] - instance.third_point[5][1]);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(21, 44, 120, 1)';
+        ctx.fill();
+    }
+
+    function _renderShape() {
         var a_ratio = _heightRatio() || [];
         if(!a_ratio) return;
         a_ratio.forEach(function(item) {
@@ -269,7 +349,14 @@ function Funnel(domID, data) {
         _renderMiddle(a_ratio[1]);
         _renderThird(a_ratio[2]);
         _renderBottom();
-        _renderShadow();
+        _renderTShadow();
+        _renderMShadow();
+        _renderBShadow();
+        ctx.save();
+    }
+
+    instance.render = function(options) {
+        _renderShape();
         return instance;
     };
     return instance;

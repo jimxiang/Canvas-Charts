@@ -28,15 +28,15 @@
 var data = [
         {
         	title: '董事长/创始人',
-            value: 13
+            value: 20
         },
         {
         	title: '总监/经理',
-            value: 34
+            value: 40
         },
         {
         	title: '助理/专员执行人员',
-            value: 53
+            value: 40
         }
     ],
     options = {
@@ -59,12 +59,13 @@ function Funnel(domID, data) {
         ctx = canvas.getContext('2d'),
         width = canvas.width,
         height = canvas.height,
-        pyramid_l = height * 0.6, // 正四棱锥的棱长
+        pyramid_l = height * 0.4, // 正四棱锥的棱长
         pyramid_h = height / (Math.sqrt(2)), // 正四棱锥高
         top_ang = Math.PI * 7 / 36,
-        bottom_ang = Math.PI / 9;
+        bottom_ang = Math.PI / 9,
+        resizeH = 0;
 	data = data || {};
-    ctx.translate(canvas.width/2, 0);
+    ctx.translate(width / 2, 0);
 
     function _heightRatio() {
         if(!data) return;
@@ -91,6 +92,7 @@ function Funnel(domID, data) {
         instance.top_height = top_h;
         instance.top_b_l = top_l * Math.sin(top_ang);
         instance.shadow_length = top_h / (4 * Math.sqrt(2));
+        instance.top_point = [point_left, point_middle, point_right, top_h];
 
         ctx.beginPath();
         ctx.moveTo(0, 0);
@@ -110,31 +112,25 @@ function Funnel(domID, data) {
         ctx.fillStyle = 'rgba(103, 169, 101, 1)';
         ctx.fill();
 
-        // 顶部阴影
-//        ctx.beginPath();
-//        ctx.moveTo(0, point_middle_y - 18);
-//        ctx.lineTo(point_left_x + 30, point_left_y + 11);
-//        // ctx.lineTo();
-//        ctx.closePath();
-//        ctx.strokeStyle = 'rgba(44, 133, 144, 1)';
-//        ctx.stroke();
-        ctx.translate(0, top_l);
+        ctx.translate(0, top_h);
+        resizeH += top_h;
     }
 
     function _renderMiddle(ratio) {
         if(!ratio) return;
         var middle_l = (+ratio) * pyramid_l,
             middle_h = middle_l * Math.cos(top_ang) + middle_l * Math.sin(top_ang) * Math.tan(bottom_ang),
-            start_height_fix = instance.top_b_l * Math.sin(bottom_ang),
+            start_height_fix = instance.top_b_l * Math.tan(bottom_ang),
             point_left_top = [-instance.top_b_l, 0],
             point_left_bottom = [-(middle_l * Math.sin(top_ang) + instance.top_b_l), middle_l * Math.cos(top_ang)],
-            point_middle = [0, middle_h],
+            point_middle = [0, middle_h + start_height_fix],
             point_right_top = [instance.top_b_l, 0],
             point_right_bottom = [middle_l * Math.sin(top_ang) + instance.top_b_l, middle_l * Math.cos(top_ang)];
 
         instance.middle_length = middle_l;
         instance.middle_height = middle_h;
 	    instance.middle_b_l = middle_l * Math.sin(top_ang) + instance.top_b_l;
+        instance.middle_point = [point_left_top, point_left_bottom, point_middle, point_right_top, point_right_bottom, [0, start_height_fix], middle_h];
 
         ctx.beginPath();
         ctx.moveTo(0, start_height_fix);
@@ -156,22 +152,24 @@ function Funnel(domID, data) {
         ctx.fillStyle = 'rgba(45, 146, 148, 1)';
         ctx.fill();
 
-        ctx.translate(0, middle_l);
+        ctx.translate(0, middle_h);
+        resizeH += middle_h;
     }
 
     function _renderThird(ratio) {
         if(!ratio) return;
         var third_l = (+ratio) * pyramid_l,
             third_h = third_l * Math.cos(top_ang) + third_l * Math.sin(top_ang) * Math.tan(bottom_ang),
-	        start_height_fix = instance.middle_b_l * Math.sin(bottom_ang),
+	        start_height_fix = instance.middle_b_l * Math.tan(bottom_ang),
 	        point_left_top = [-instance.middle_b_l, 0],
 	        point_left_bottom = [-(third_l * Math.sin(top_ang) + instance.middle_b_l), third_l * Math.cos(top_ang)],
-	        point_middle = [0, third_h],
+	        point_middle = [0, third_h + start_height_fix],
 	        point_right_top = [instance.middle_b_l, 0],
 	        point_right_bottom = [third_l * Math.sin(top_ang) + instance.middle_b_l, third_l * Math.cos(top_ang)],
 
             shadow_length = instance.shadow_length,
             middle_section_h = instance.middle_length / 2;
+        instance.third_b_l = third_l * Math.sin(top_ang) + instance.middle_b_l;
 
         ctx.beginPath();
         ctx.moveTo(0, start_height_fix);
@@ -192,29 +190,73 @@ function Funnel(domID, data) {
         ctx.closePath();
         ctx.fillStyle = 'rgba(17, 107, 159, 1)';
         ctx.fill();
-        ctx.translate(0, third_l);
+        ctx.translate(0, third_h);
+        resizeH += third_h;
     }
 
     function _renderBottom() {
+        var start_height_fix = instance.third_b_l * Math.tan(bottom_ang),
+            bottom_l = 30,
+            point_left_top = [-instance.third_b_l, 0],
+            point_left_bottom = [-(bottom_l * 2 * Math.sin(top_ang) + instance.third_b_l * 0.9), bottom_l * Math.cos(top_ang)],
+            point_middle = [0, bottom_l + start_height_fix],
+            point_right_top = [instance.third_b_l, 0],
+            point_right_bottom = [bottom_l * 2 * Math.sin(top_ang) + instance.third_b_l * 0.9, bottom_l * Math.cos(top_ang)];
+
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-265, -80);
-        ctx.lineTo(-278, -60);
-        ctx.lineTo(0 , 26);
-        ctx.lineTo(0, 0);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_left_top[0], point_left_top[1]);
+        ctx.lineTo(point_left_bottom[0], point_left_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(22, 60, 134, 1)';
         ctx.fill();
 
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(265, -80);
-        ctx.lineTo(278, -60);
-        ctx.lineTo(0 , 26);
-        ctx.lineTo(0, 0);
+        ctx.moveTo(0, start_height_fix);
+        ctx.lineTo(point_right_top[0], point_right_top[1]);
+        ctx.lineTo(point_right_bottom[0], point_right_bottom[1]);
+        ctx.lineTo(point_middle[0], point_middle[1]);
+        ctx.lineTo(0, start_height_fix);
         ctx.closePath();
         ctx.fillStyle = 'rgba(20, 46, 129, 1)';
         ctx.fill();
+        ctx.save();
+    }
+
+    function _renderShadow() {
+        // 顶部阴影
+        var shadow_t_left = [-instance.top_b_l * 0.7, instance.top_point[3] - (instance.top_b_l * 0.7) * Math.tan(bottom_ang)],
+            shadow_t_right = [instance.top_b_l * 0.7, instance.top_point[3] - (instance.top_b_l * 0.7) * Math.tan(bottom_ang)];
+
+        ctx.translate(0, -resizeH);
+        ctx.beginPath();
+        ctx.moveTo(instance.top_point[1][0], instance.top_point[1][1]);
+        ctx.lineTo(shadow_t_left[0], shadow_t_left[1]);
+        ctx.lineTo(instance.middle_point[0][0], instance.middle_point[0][1] + instance.top_point[3])
+        ctx.lineTo(instance.middle_point[5][0], instance.middle_point[5][1] + instance.top_point[3]);
+        ctx.lineTo(instance.middle_point[3][0], instance.middle_point[3][1] + instance.top_point[3]);
+        ctx.lineTo(shadow_t_right[0], shadow_t_right[1]);
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(42, 132, 151, 1)';
+        ctx.fill();
+
+        // 中间层阴影
+        var shadow_m_left = [-instance.middle_b_l * 0.7, instance.middle_point[3] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)],
+            shadow_m_right = [instance.middle_b_l * 0.7, instance.middle_point[3] - (instance.middle_b_l * 0.7) * Math.tan(bottom_ang)];
+
+        ctx.translate(0, -resizeH + instance.top_point[3]);
+        ctx.beginPath();
+        ctx.moveTo(instance.middle_point[2][0], instance.middle_point[2][1]);
+        ctx.lineTo(shadow_m_left[0], shadow_m_left[1]);
+        // ctx.lineTo(instance.middle_point[0][0], instance.middle_point[0][1] + instance.top_point[3])
+        // ctx.lineTo(instance.middle_point[5][0], instance.middle_point[5][1] + instance.top_point[3]);
+        // ctx.lineTo(instance.middle_point[3][0], instance.middle_point[3][1] + instance.top_point[3]);
+        // ctx.lineTo(shadow_p_right[0], shadow_p_right[1]);
+        ctx.closePath();
+        ctx.strokeStyle = '#fff)';
+        ctx.stroke();
     }
 
     instance.render = function(options) {
@@ -226,7 +268,8 @@ function Funnel(domID, data) {
         _renderTop(a_ratio[0]);
         _renderMiddle(a_ratio[1]);
         _renderThird(a_ratio[2]);
-        // _renderBottom();
+        _renderBottom();
+        _renderShadow();
         return instance;
     };
     return instance;
